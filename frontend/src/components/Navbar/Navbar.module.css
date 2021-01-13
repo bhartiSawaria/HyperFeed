@@ -1,0 +1,223 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+/*---------------------Main Navbar styles-----------------*/
+
+.RootContainer{
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    height: 50px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    padding: 0rem 10vw;
+    align-items: center;
+}
+
+.IconContainer{
+    font-size: 30px;
+    font-family: 'Dancing Script', cursive;
+}
+
+.IconContainer a{
+    color: black;
+}
+
+.LinksContainer ul{
+    margin: 0rem;
+}
+
+.LinksContainer li{
+    list-style: none;
+    display: inline-block;   
+    font-size: 16px;
+}
+
+.LinksContainer li a{
+    color: #000000;
+    padding: 1rem;
+}
+
+.NavbarButton{  
+    background-color: #ffffff;
+    color: #000000;
+    outline: none;
+    border: none;
+    font-family: 'Merriweather', serif;
+}
+
+.LinksContainer li:hover,
+.LinksContainer li a:hover,
+.NavbarButton:hover{
+    color: red;
+}
+
+/*----------------Sidebar styles---------------------*/
+
+.SideBar{
+    position: fixed;
+    z-index: 50;
+    top: 50px;
+    right: -90%;
+    height: 100%;
+    width: 30%;
+    background-color: #ffffff;
+    text-align: justify;
+    padding: 0rem 2rem;
+    transition: all 600ms linear;
+}
+
+.SideBar ul{
+    padding: 0rem;
+}
+
+.SideBar li{
+    list-style: none;
+    padding: 1rem 0rem 1rem 0rem;
+    border-bottom: 0.5px solid #ccc;
+    font-size: 16px;
+}
+
+.SideBar li a{
+    color: #000000;
+}
+
+.SideBar li:hover,
+.SideBar li a:hover{
+    color: red;
+}
+
+.SideBar button{
+    text-align: left;
+    /* background-color: #ffffff; */
+}
+
+.DisplaySidebar{
+    right: 0%;
+}
+
+/*-----------------------Dropdown list styles---------------------*/
+
+.RootContainer .Dropdown button{
+    background-color: #ffffff;
+    color: black;
+    font-size: 18px;
+    outline: none;
+    border: none;
+    font-family: 'Merriweather', serif;
+}
+
+.RootContainer .DropdownItemsContainer{
+    display: none;
+    position: fixed;
+    top: 60px;
+    text-align: left;
+    background-color: #80807B;
+    padding: 0px 2px;
+}
+
+.RootContainer .DropdownItemsContainer a{
+    display: block;
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 16px; 
+    border-bottom: 0.1px solid #ffffff;
+    min-width: 150px;
+}
+
+.RootContainer .DropdownItemsContainer a:hover,
+.SideBar .DropdownItemsContainer a:hover{
+    background-color: rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+/*-----------------Sidebar dropdown styles-----------------------*/
+
+.SideBar .Dropdown button{
+    background-color: #ffffff;
+    color: black;
+    font-size: 18px;
+    outline: none;
+    border: none;
+    font-family: 'Merriweather', serif;
+}
+
+.SideBar .DropdownItemsContainer{
+    display: none;
+    position: fixed;
+    top: 130px;
+    text-align: left;
+    background-color: #eee;
+    padding: 0px 2px;
+}
+
+.SideBar .DropdownItemsContainer a{
+    display: block;
+    color: black;
+    padding: 1rem 2rem;
+    font-size: 16px;
+    border-bottom: 0.1px solid #ffffff;
+    min-width: 150px;
+}
+
+/*----------------Hamburger Menu Styles-------------------*/
+
+.HamburgerMenu{
+    display: none;
+}
+
+/*------------Media queries-----------------*/
+
+@media (max-width: 992px){
+    .LinksContainer{
+        display: none;
+    }
+
+    .HamburgerMenu{
+        width: 50px;
+        height: 65%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+    }
+
+    .HamburgerMenu span{
+        display: inline-block;
+        width: 100%;
+        height: 12%;
+        background-color: #000000;
+        border-radius: 10px;
+    }
+
+    .NavbarButton,
+    .Dropdown button{
+        font-family: 'Merriweather', serif;
+        padding-left: 0px;
+    }
+
+    .DropdownItemsContainer{
+        position: static;
+    }
+}
+
+@media (max-width: 768px){
+    .SideBar{
+        width: 45%;
+    }
+}
+
+@media (max-width: 576px){
+    .SideBar{
+        width: 65%;
+    }
+}
+
+@media (max-width: 400px){
+    .SideBar{
+        width: 90%;
+    }
+}

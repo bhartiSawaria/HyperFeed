@@ -1,0 +1,45 @@
+
+.RootContainer{
+    margin: 10vh auto;
+    display: flex;
+    width: 80%;
+}
+
+.FeedContainer{
+    width: 65%;   
+    padding: 0px 10% 0px 15%;
+    /* margin-left: 20%; */
+}
+
+.SuggestionBar{
+    height: 600px;
+    width: 22%;
+    overflow-y: scroll;
+    background-color: #ffffff;
+    padding: 1rem;
+    position: fixed;
+    right: 15%;
+    top: 15%;
+}
+
+.SuggestionBar > p{
+    color: grey;
+    text-align: left;
+    /* font-weight: bold; */
+}
+
+.NoUsersDiv{
+    margin-top: 25vh;
+    font-size: 25px;
+}
+
+.FriendAddedMessage{
+    position: fixed;
+    z-index: 20;
+    left: 30%;
+    top: 30vh;
+    width: 40%;
+    padding: 1rem;
+    font-size: 20px;
+    background-color: #ffffff;
+}

@@ -1,0 +1,54 @@
+
+.RootContainer{
+    width: 100%;
+    text-align: left;
+    display: grid;
+    grid-template-rows: 30px 30px;
+    grid-template-columns: 60px 2fr 1fr;
+    grid-template-areas: "profilePic username button"
+                         "profilePic username button"; 
+    align-items: center;
+    margin: 10px auto;
+}
+
+.RootContainer div:nth-of-type(1){
+    grid-area: profilePic;
+    /* margin-right: 10px; */
+}
+
+.RootContainer div:nth-of-type(2){
+    grid-area: username;
+    margin-left: 10px;
+}
+
+.RootContainer div:nth-of-type(2) > span{
+    display: inline-block;
+}
+
+.RootContainer div:nth-of-type(3){
+    grid-area: button;
+    text-align: right;
+}
+
+.RootContainer button{ 
+    font-size: 20px;
+    height: 30px;
+    width: 30px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: 1px solid grey;
+    outline: none;
+    text-align: center;
+    align-self:auto ;
+}
+
+.RootContainer button:hover{
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.RootContainer > div > img{
+    height: 55px;
+    width: 55px;
+    border-radius: 50%;
+}

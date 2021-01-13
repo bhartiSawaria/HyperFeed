@@ -1,0 +1,46 @@
+
+.RootContainer{
+    display: flex;
+    /* text-align: center; */
+    align-items: center;
+    margin: 5px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 10px;
+    max-width: 40vw;
+}
+
+.ImageContainer{
+    height: 50px;
+    width: 50px;
+}
+
+.ImageContainer img{
+    height: 100%;
+    width:100%;
+    border-radius: 50px;
+}
+
+.DataContainer{
+    margin-left: 10px;
+}
+
+.DataContainer p{
+    display: inline-block;
+}
+
+.DataContainer p:first-of-type{
+    font-weight: bolder;
+    margin-right: 350px;
+    margin-bottom: 0px;
+}
+
+.DataContainer p:nth-of-type(2){
+    color: #767474;
+}
+
+.DataContainer p:nth-of-type(3){
+    display: block;
+    text-align: left;
+    margin-top: -15px;
+}

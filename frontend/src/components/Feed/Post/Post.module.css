@@ -1,0 +1,165 @@
+.RootContainer{
+    /* width: 50%; */
+    background-color: white;
+    padding-top: 1.5rem;
+    margin: 5% auto;
+    text-align: left;
+}
+
+.UsernameContainer{
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 0rem 2rem 1rem 2rem;
+}
+
+.UsernameContainer img{
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    border: 0.5px solid black;
+    margin-right: 10px;
+    display: inline-block;
+}
+
+.UsernameContainer p{
+    font-size: 16px;
+    display: inline-block;
+    margin: 0em;
+}
+
+.UsernameContainer span{
+    font-size: 12px;
+    color: #544C4A;
+    display: inline-block;
+    margin-left: 10px;
+    position: absolute;
+    right: 0;
+}
+
+.Title{
+    font-size: 24px;
+    margin-top: 1rem;
+}
+
+.BottomPartContainer{
+    margin: 0.5rem 1rem 0rem 1rem;
+}
+
+.ContentContainer{
+    font-size: 14px;
+}
+
+.ContentContainer h1{
+    font-weight: bold;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.ContentContainer p{
+    display: inline-block;
+}
+
+.ImageContainer img{
+    width: 100%;
+    max-height: 400px;
+    margin: auto;
+}
+
+.IconsContainer{
+    position: relative;
+    margin-top: 1rem;
+    /* align-items: center; */
+   
+}
+
+.IconsContainer i, svg{
+   margin: 5px;
+   vertical-align: middle;
+}
+
+.IconsContainer img{
+    position: absolute;
+    right: 0;
+}
+
+.RootContainer p{
+    margin: 5px;
+}
+
+.ViewComments{
+    color: #999999;
+    cursor: pointer;
+}
+
+.AddCommentContainer{
+    width: 100%;
+    border-top: 0.5px solid #cccc99;
+    margin-top: 8px;
+    padding-left: 20px;
+}
+
+.AddCommentContainer input{
+    width: 80%;
+    height: 50px;
+    border: none;  
+}
+.AddCommentContainer button{
+    display: inline-block;
+    background-color: white;
+    border: none;
+    color: #cccc99;
+}
+
+.CommentsModal{
+    position: fixed;
+    z-index: 20;
+    left: 30%;
+    top: 30vh;
+    text-align: center;
+    min-width: 40%;
+    /* width: 40%; */
+}
+
+.NoCommentDiv{
+    align-items: center;
+    margin: 5px;
+    background-color: #ffffff;
+    padding: 10px;
+    font-size: 20px;
+    max-width: 40vw;
+    min-width: 20vh;
+}
+
+@media (max-width: 992px){
+    .RootContainer{
+        width: 65%;
+    }
+
+    .Modal{
+        width: 60%;
+        margin-left: 20%;
+    }
+}
+
+@media (max-width: 768px){
+    .RootContainer{
+        width: 75%;
+    }
+
+    .Modal{
+        width: 80%;
+        margin-left: 10%;
+    }
+}
+
+@media (max-width: 578px){
+    .RootContainer{
+        width: 90%;
+    }
+
+    .Modal{
+        width: 90%;
+        margin-left: 5%;
+    }
+}

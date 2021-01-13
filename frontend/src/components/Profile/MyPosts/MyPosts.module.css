@@ -1,0 +1,31 @@
+
+.RootContainer{
+    margin: 10vh auto;
+    padding: 8px;
+    width: 33%;
+}
+
+.Modal{
+    position: fixed;
+    width: 50%;
+    left: 25%;
+    top: 40vh;
+    z-index: 20;
+    background-color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.PageHeading{
+    font-size: 24px;
+}
+
+.NoPost{
+    font-size: 16px;
+}
+
+@media (max-width: 578px){
+    .NoPost{
+        font-size: 14px;
+    }
+}

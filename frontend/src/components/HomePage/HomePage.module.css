@@ -1,0 +1,54 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Londrina+Outline&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap');
+
+.RootContainer{
+    text-align: center;
+    font-family: 'Londrina Outline', cursive;
+    /* margin-top: 20vh; */
+}
+
+.RootContainer > p:nth-of-type(1){
+    color: #ffffff;
+    font-size: 100px;
+    margin-top: 200px;
+    position: absolute;
+    z-index: 100;
+    left: 35%;
+    /* font-family: 'Dancing Script', cursive; */
+}
+
+.RootContainer > p:nth-of-type(2){
+    color: #ffffff;
+    font-size: 50px;
+    margin-top: 350px;
+    position: absolute;
+    z-index: 100;
+    left: 32%;
+}
+
+.RootContainer > button{
+    margin-top: 450px;
+    position: absolute;
+    z-index: 100;
+    left: 43%;
+    font-size: 20px;
+    padding: 1.5rem;
+    outline: none;
+    border: none;
+}
+
+.RootContainer > button:hover{
+    background-color: rgba(0, 0, 0, 0.7);
+    /* background-color: #ff5252; */
+    color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+@media (max-width: 992px){
+    .RootContainer img{
+        width: 100%;
+        margin-top: 5vh;
+    }
+}
+

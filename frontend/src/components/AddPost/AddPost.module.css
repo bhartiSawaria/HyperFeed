@@ -1,0 +1,35 @@
+
+.RootContainer{
+    margin: 15vh auto;
+    width: 60%;
+    /* height: 60%; */
+    background-color: #d6d6d6;
+    padding: 2rem;
+}
+
+.InputField input,
+.InputField textarea{
+    width: 100%;
+    margin: 0rem auto 1rem auto;
+    padding: 1rem;
+    border: none;
+    outline: none;
+    background-color: #ffffff;
+}
+
+.PostButton{
+    width: 100%;
+}
+
+@media (max-width: 768px){
+    .RootContainer{
+        width: 80%;
+    }
+}
+
+@media (max-width: 578px){
+    .RootContainer{
+        width: 90%;
+        margin: 20vh auto;
+    }
+}
