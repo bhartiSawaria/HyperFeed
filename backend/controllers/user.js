@@ -1,17 +1,18 @@
 
 const { validationResult } = require('express-validator/check');
+const mongoose = require('mongoose');
 
-const User = require('../modals/user');
-const Post = require('../modals/post');
+const User = require('../models/user');
+const Post = require('../models/post');
 
 exports.getProfile = (req, res, next) => {
-    User.find({_id: req.userId})
+    User.findById(req.userId)
     .populate('posts')
     .populate('friends')
     .exec()
-    .then(users => {
-        if(users.length > 0){
-            res.status(200).json({message: 'User info fetched successfully.', user: users[0]});
+    .then(user => {
+        if(user){
+            res.status(200).json({message: 'User info fetched successfully.', user: user});
         }
     })
     .catch(err => {
@@ -22,33 +23,36 @@ exports.getProfile = (req, res, next) => {
 }
 
 exports.postEditAccount = (req, res, next) => {
-        const errors = validationResult(req);
-        if( !errors.isEmpty() ){
-            const err = new Error('Editing failed!');
-            err.data = errors.array(); 
-            console.log('Error occured in postEditAccount', errors);
-            throw err;
+    const errors = validationResult(req);
+    if( !errors.isEmpty() ){
+        const err = new Error('Editing failed!');
+        err.data = errors.array(); 
+        console.log('Error occured in postEditAccount', errors);
+        throw err;
+    }
+
+    const userId = req.userId;
+    User
+    .findById(userId)
+    .populate('posts')
+    .populate('friends')
+    .exec()
+    .then(user => {
+        user.name = req.body.name;
+        user.username = req.body.username;
+        user.email = req.body.email;
+        return user.save();
+    })
+    .then(user => {
+        if(user){
+            res.status(200).json({message: 'Account info updated successfully.', user: user});
         }
-        const userId = req.userId;
-        User.findById(userId).then(user => {
-            user.name = req.body.name;
-            user.username = req.body.username;
-            user.email = req.body.email;
-            return user.save();
-        })
-        .then(user => {
-            return User.find({_id: user._id}).populate('posts').populate('friends').exec();
-        })
-        .then(users => {
-            if(users && users.length > 0){
-                res.status(200).json({message: 'Account info updated successfully.', user: users[0]});
-            }
-        })
-        .catch(err => {
-            const error = new Error(err);
-            error.setStatus = err.status || 500;    
-            next(error);
-        })
+    })
+    .catch(err => {
+        const error = new Error(err);
+        error.setStatus = err.status || 500;    
+        next(error);
+    })
 }
 
 exports.getPosts = async(req, res, next) => {
@@ -71,7 +75,7 @@ exports.getPosts = async(req, res, next) => {
     }catch(err){
         const error = new Error(err);
         error.setStatus = 500;    
-        return next(error);
+        next(error);
     }
 };
 
@@ -88,7 +92,7 @@ exports.getUsers = (req, res, next) => {
     .catch(err => {
         const error = new Error(err);
         error.setStatus = 500;    
-        return next(error); 
+        next(error); 
     })
 }
 
@@ -104,6 +108,9 @@ exports.changeProfilePic = (req, res, next) => {
     }
 
     User.findById(userId)
+    .populate('posts')
+    .populate('friends')
+    .exec()
     .then(user => {
         if(user){
             user.imageUrl = imageUrl;
@@ -111,20 +118,12 @@ exports.changeProfilePic = (req, res, next) => {
         }
     })
     .then(user => {
-        return User.find({_id: user._id})
-                .populate('posts')
-                .populate('friends')
-                .exec();
-    })
-    .then(users => {
-        if(users && users.length > 0){
-            res.status(200).json({message: 'Profile pic updated successfully', user: users[0]});
-        }
+        res.status(200).json({message: 'Profile pic updated successfully', user: user});
     })
     .catch(err => {
         const error = new Error(err);
         error.setStatus = 500;    
-        return next(error); 
+        next(error); 
     })
 }
 
@@ -139,15 +138,15 @@ exports.postAddFriend = (req, res, next) => {
             return user.save();
         }
     })
-    .then(() => User.find({_id: addedFriendId}).populate('posts').exec())  
-    .then(users => {
-        if(users.length > 0)
-            res.status(200).json({message: 'Friend added successfully', friend: users[0]});
+    .then(() => User.findOne({_id: addedFriendId}).populate('posts').exec())  
+    .then(user => {
+        if(user)
+            res.status(200).json({message: 'Friend added successfully', friend: user});
     })
     .catch(err => {
         const error = new Error(err);
         error.setStatus = 500;    
-        return next(error); 
+        next(error); 
     })
 }
 
@@ -168,6 +167,6 @@ exports.postRemoveFriend = (req, res, next) => {
     .catch(err => {
         const error = new Error(err);
         error.setStatus = 500;    
-        return next(error); 
+        next(error); 
     })
 }

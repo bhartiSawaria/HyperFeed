@@ -4,6 +4,7 @@ import { Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import mime from 'mime-types';
 
+import fetcher from '../../fetchWrapper';
 import classes from './AddPost.module.css';
 
 class AddPost extends Component{
@@ -57,13 +58,10 @@ class AddPost extends Component{
             formData.append('content', this.state.content);
             formData.append('image', this.state.image);
             formData.append('userId', this.props.user.id);
-            fetch('http://localhost:8080/add-post', {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + this.props.token
-                },
+            fetcher('/add-post', {
+                method: 'Post',
                 body: formData
-            })
+            }, true)
             .then(result => {
                 console.log('1. Result is ', result);
                 return result.json();

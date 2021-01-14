@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import classes from './Signup.module.css';
 import profilePic from '../../assets/images/user2.png';
+import fetcher from '../../fetchWrapper';
 
 class Signup extends Component{
 
@@ -90,27 +91,19 @@ class Signup extends Component{
         event.preventDefault();
         if( this.isFormValid() ){
             this.setState({isLoading: true});
-            fetch('http://localhost:8080/signup',{
+            fetcher('/signup',{
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify(this.state.userInfo)
             })
+            .then(result => result.json())
             .then(result => {
-                console.log('Status is: ', result.status);
-                this.setState({isLoading: false});
-                return result.json()
-            })
-            .then(result => {
-                console.log('Result ka data', result.data);
                 if( result.data ){
                     this.setState({error: result.data[0].msg});
                 }
                 else{
                     this.props.history.push('/login');
                 }
-                console.log('result is', result);
+                this.setState({isLoading: false});
             })
             .catch(err => {
                 this.setState({isLoading: false});

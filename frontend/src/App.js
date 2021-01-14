@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import classes from './App.module.css';
 import Navbar from './components/Navbar/Navbar';
-import Signup from './components/Signup/Signup';
-import Login from './components/Login/Login';
+import Signup from './containers/Signup/Signup';
+import Login from './containers/Login/Login';
 import * as actionCreators from './actions/index';
 import HomePage from './components/HomePage/HomePage';
-import AddPost from './components/AddPost/AddPost';
-import Feed  from './components/Feed/Feed';
-import SavedPosts from './components/SavedPosts/SavedPosts';
-import Profile from './components/Profile/Profile';
-import MyPosts from './components/Profile/MyPosts/MyPosts';
+import AddPost from './containers/AddPost/AddPost';
+import Feed  from './containers/Feed/Feed';
+import SavedPosts from './containers/SavedPosts/SavedPosts';
+import Profile from './containers/Profile/Profile';
+import MyPosts from './containers/Profile/MyPosts/MyPosts';
 import Error from './components/Error/Error';
 
 class App extends Component{

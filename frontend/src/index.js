@@ -4,11 +4,14 @@ import 'semantic-ui-css/semantic.min.css';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { BrowserRouter } from 'react-router-dom';
+import axios from 'axios';
 
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import rootReducer from './reducers/index';
+
+axios.defaults.baseURL = 'http://localhost:8080/';
 
 const store = createStore(rootReducer);
 

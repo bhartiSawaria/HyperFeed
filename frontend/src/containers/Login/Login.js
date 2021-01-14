@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import classes from './Login.module.css';
 import * as actionCreators from '../../actions/index';
+import fetcher from '../../fetchWrapper';
 
 class Login extends Component{
 
@@ -48,15 +49,11 @@ class Login extends Component{
         event.preventDefault();
         if( this.isFormValid() ){
             this.setState({isLoading: true});
-            fetch('http://localhost:8080/login',{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(this.state.userInfo)
+            fetcher('/login', {
+                body: JSON.stringify(this.state.userInfo),
+                method: 'POST'
             })
             .then(result => {
-                // console.log('Status is: ', result.status);
                 this.setState({isLoading: false});
                 return result.json();
             })

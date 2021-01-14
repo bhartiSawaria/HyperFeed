@@ -5,11 +5,12 @@ import { Input, Button} from 'semantic-ui-react';
 import mime from 'mime-types';
 
 import classes from './Profile.module.css';
-import Spinner from '../Spinner/Spinner';
-import Backdrop from '../Backdrop/Backdrop';
+import Spinner from '../../components/Spinner/Spinner';
+import Backdrop from '../../components/Backdrop/Backdrop';
 import profilePic from '../../assets/images/user2.png';
-import User from '../User/User';
-import Post from '../Feed/Post/Post';
+import User from '../../components/User/User';
+import Post from '../Post/Post';
+import fetcher from '../../fetchWrapper';
 
 class Profile extends Component{
 
@@ -31,15 +32,10 @@ class Profile extends Component{
     }
 
     componentDidMount(){
-        fetch('http://localhost:8080/my-profile', {
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + this.props.token
-            }
+        fetcher('/my-profile', {
+            method: 'GET'
         })
-        .then(result => {
-            return result.json();
-        })
+        .then(result => result.json())
         .then(result => {
             this.setState({
                 user: result.user, 
@@ -80,12 +76,8 @@ class Profile extends Component{
 
     proceedFinalEditHandler = () => {
         this.setState({isEditing: true});
-        fetch('http://localhost:8080/edit-account', {
+        fetcher('/edit-account', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + this.props.token
-            },
             body: JSON.stringify({
                 name: this.state.editedUserInfo.name,
                 username: this.state.editedUserInfo.username,
@@ -93,19 +85,17 @@ class Profile extends Component{
                 id: this.props.user.id
             })
         })
-        .then(result => {
-            return result.json();
-        })
+        .then(result => result.json())
         .then(result => {
             console.log('Result is ', result);
             let error = '';
             if(result.data){
                 error = result.data[0].msg;
-                console.log('Error is set.', error);
                 this.setState({error: error, isEditing: false});
             }
             else{
-                this.setState({user: result.user,
+                this.setState({
+                    user: result.user,
                     editedUserInfo: {
                         name: result.user.name, 
                         username: result.user.username, 
@@ -149,18 +139,13 @@ class Profile extends Component{
             const formData = new FormData();
             formData.append('image', this.state.image);
             formData.append('imageUrl', profilePic);
-            fetch('http://localhost:8080/change-profile-pic', {
+            
+            fetcher('/change-profile-pic', {
                 method: 'POST',
-                body: formData,
-                headers: {
-                    Authorization: 'Bearer ' + this.props.token
-                }
-            })
+                body: formData
+            }, true)
+            .then(result => result.json())
             .then(result => {
-                return result.json();
-            })
-            .then(result => {
-                console.log('Result ....', result);
                 this.setState({user: result.user, isEditing: false});
                 this.hideModalAndBackdrop();
             })
@@ -180,19 +165,13 @@ class Profile extends Component{
     }
 
     onClickRemove = (removedFriendId) => {
-        fetch("http://localhost:8080/remove-friend", {
-            headers: {
-                Authorization: 'Bearer ' + this.props.token,
-                'Content-Type': 'application/json'
-            },
-            method: 'Post',
+        fetcher('/remove-friend', {
+            method: 'POST',
             body: JSON.stringify({
                 removedFriendId: removedFriendId
             })
         })
-        .then(result => {
-            return result.json();
-        })
+        .then(result => result.json())
         .then(result => {
             const removedFriendContainer = document.getElementById(removedFriendId);
             removedFriendContainer.remove();
@@ -361,7 +340,6 @@ class Profile extends Component{
 
 const mapStateToProps = state => {
     return{
-        token: state.auth.token,
         user: state.auth.userDetails
     }
 }

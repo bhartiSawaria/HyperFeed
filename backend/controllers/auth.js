@@ -3,7 +3,7 @@ const { validationResult } = require('express-validator/check');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require('../modals/user'); 
+const User = require('../models/user'); 
 const SECRET = 'mySecret';
 
 exports.postSignup = (req, res, next) => {
@@ -69,6 +69,6 @@ exports.postLogin = (req, res, next) => {
     .catch(err => {
         const error = new Error('Cannot find user!');
         error.statusCode = 500;
-        throw error;
+        next(error);
     })
 }

@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 import classes from './SavedPosts.module.css';
-import Post from '../../components/Post/Post';
+import Post from '../Post/Post';
 import Spinner from '../../components/Spinner/Spinner';
 import fetcher from '../../fetchWrapper';
 

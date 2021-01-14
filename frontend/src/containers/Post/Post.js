@@ -5,13 +5,13 @@ import { Icon } from 'semantic-ui-react';
 import { BsChat  } from "react-icons/bs";
 // import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import moment from 'moment';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
-import deleteIcon from '../../../assets/images/delete.png';
-import Comment from '../../Comment/Comment';
-import Backdrop from '../../Backdrop/Backdrop';
-
+import deleteIcon from '../../assets/images/delete.png';
+import Comment from '../../components/Comment/Comment';
+import Backdrop from '../../components/Backdrop/Backdrop';
 import classes from './Post.module.css';
+import fetcher from '../../fetchWrapper';
 
 class Post extends Component{
 
@@ -33,23 +33,15 @@ class Post extends Component{
             this.setState({likesCount: this.state.likesCount + 1});
             icon.classList.remove('outline');
             icon.style.color = 'red';
-            fetch('http://localhost:8080/like-post', {
+            fetcher('/like-post', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + this.props.token
-                },
                 body: JSON.stringify({
                     postId: this.state.id
                 })
             })
+            .then(result => result.json())
             .then(result => {
-                console.log('Result 1', result);
-                return result.json();
-            })
-            .then(result => {
-                console.log('Result 2', result);
-                // this.setState({likesCount: this.state.likesCount + 1});
+                console.log('Result ', result);
             })
             .catch(err => {
                 console.log('Error in like-post', err);
@@ -60,20 +52,13 @@ class Post extends Component{
             icon.classList.add('outline');
             icon.style.color = '';
             this.setState({likesCount: this.state.likesCount - 1});
-            fetch('http://localhost:8080/unlike-post', {
+            fetcher('/unlike-post', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + this.props.token
-                },
                 body: JSON.stringify({
                     postId: this.state.id
                 })
             })
-            .then(result => {
-                console.log('Result 1', result);
-                return result.json();
-            })
+            .then(result => result.json())
             .then(result => {
                 console.log('Result 2', result);
             })
@@ -91,20 +76,13 @@ class Post extends Component{
         let isOutlined = icon.classList.contains('outline');
         if(isOutlined){
             icon.classList.remove('outline');
-            fetch('http://localhost:8080/save-post', {
+            fetcher('/save-post', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + this.props.token
-                },
                 body: JSON.stringify({
                     postId: this.state.id
                 })
             })
-            .then(result => {
-                console.log('Result 1', result);
-                return result.json();
-            })
+            .then(result => result.json())
             .then(result => {
                 console.log('Result 2', result);
             })
@@ -115,20 +93,13 @@ class Post extends Component{
         }
         else{
             icon.classList.add('outline');
-            fetch('http://localhost:8080/remove-saved-post', {
+            fetcher('/remove-saved-post', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + this.props.token
-                },
                 body: JSON.stringify({
                     postId: this.state.id
                 })
             })
-            .then(result => {
-                console.log('Result 1', result);
-                return result.json();
-            })
+            .then(result => result.json())
             .then(result => {
                 console.log('Result 2', result);
             })
@@ -147,12 +118,8 @@ class Post extends Component{
         event.preventDefault();
         if(this.state.comment !== ''){
             // this.setState({commentsCount: this.state.commentsCount + 1});
-            fetch("http://localhost:8080/add-comment", {
+            fetcher("/add-comment", {
                 method: 'Post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer ' + this.props.token
-                },
                 body: JSON.stringify({
                     postId: this.state.id,
                     commentInfo: {
@@ -161,11 +128,8 @@ class Post extends Component{
                     }
                 })
             })
+            .then(result => result.json())
             .then(result => {
-                return result.json();
-            })
-            .then(result => {
-                console.log(' Result is ', result);
                 this.setState({comment: '', commentsCount: this.state.commentsCount + 1}, () => {
                     this.showCommentsHandler();
                 });
@@ -179,17 +143,12 @@ class Post extends Component{
 
     showCommentsHandler = () => {
         this.setState({showBackdrop: true, showModal: true});
-        const url = "http://localhost:8080/post/" + this.state.id;
-        fetch(url, {
-            method: 'Get',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + this.props.token
-            }
+        const url = '/post/' + this.state.id;
+        fetcher(url, {
+            method: 'Get'
         })
         .then(result => result.json())
         .then(result => {
-            console.log(' Result is ', result);
             this.setState({allComments: result.post.comments});
         })
         .catch(err => {
@@ -321,8 +280,7 @@ class Post extends Component{
 
 const mapStateToProps = state => {
     return {
-        user: {...state.auth.userDetails},
-        token: state.auth.token
+        user: {...state.auth.userDetails}
     }
 }
 

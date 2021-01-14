@@ -3,10 +3,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import classes from './Feed.module.css';
-import Post from './Post/Post';
-import User from '../User/User';
-import Spinner from '../Spinner/Spinner';
-import Backdrop from '../Backdrop/Backdrop';
+import Post from '../Post/Post';
+import User from '../../components/User/User';
+import Spinner from '../../components/Spinner/Spinner';
+import Backdrop from '../../components/Backdrop/Backdrop';
+import fetcher from '../../fetchWrapper';
 
 class Feed extends Component{
 
@@ -28,35 +29,39 @@ class Feed extends Component{
     }
 
     loadData(){
-        fetch('http://localhost:8080/feed',{
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + this.props.token
-            }
-        })
-        .then(result => {
-            return result.json();
-        })
+        fetcher('/feed',{ method: 'GET' })
+        .then(result => result.json())
         .then(result => {
             const posts = result.posts;
             posts.sort(this.sortByDateAsc);
             this.setState({posts: posts});
-            return fetch("http://localhost:8080/users", {
-                method: 'Get',
-                headers: {
-                    Authorization: 'Bearer ' + this.props.token
-                }
-            })
+            return fetcher('/users', { method: 'GET' });
         })
         .then(result => result.json())
-        .then( result => {
-            this.setState({suggestions: result.users, isLoading: false})
+        .then(result => {
+            this.setState({suggestions: result.users, isLoading: false});
         })
         .catch(err => {
             console.log('Error in feed', err);
             this.setState({isLoading: false});
             this.props.history.push('/error');
         })
+
+        // Promise.all([
+        //     fetcher('/feed',{ method: 'GET' }),
+        //     fetcher('/users', { method: 'GET' })
+        // ])
+        // .then(([posts, users]) => {
+        //     return [posts.json(), users.json()];
+        // })
+        // .then(([posts, users]) => {
+        //     this.setState({posts: posts, suggestions: users, isLoading: false});
+        // })
+        // .catch(err => {
+        //     console.log('Error in feed', err);
+        //     this.setState({isLoading: false});
+        //     this.props.history.push('/error');
+        // })
     }
 
     componentDidMount = () => {
@@ -67,12 +72,8 @@ class Feed extends Component{
         this.setState({ addedFriend: addedFriend, isPostLoading: true});
         var addedFriendContainer = document.getElementById(addedFriend._id);
         addedFriendContainer.remove();
-        fetch("http://localhost:8080/add-friend", {
-            headers: {
-                Authorization: 'Bearer ' + this.props.token,
-                'Content-Type': 'application/json'
-            },
-            method: 'Post',
+        fetcher('/add-friend', {
+            method: 'POST',
             body: JSON.stringify({
                 friendId: addedFriend._id
             })
@@ -106,7 +107,7 @@ class Feed extends Component{
             let feed = <div className={classes.NoUsersDiv}>No posts...connect to others</div>
             if(this.state.posts.length > 0){
                 feed = this.state.posts.map(post => {
-                    return <Post key={post._id} post={post} token={this.props.token}/>
+                    return <Post key={post._id} post={post}/>
                 });
             }      
 
@@ -148,7 +149,6 @@ class Feed extends Component{
 
 const mapStateToProps = state => {
     return {
-        token: state.auth.token,
         user: {...state.auth.userDetails}
     }
 }

@@ -1,6 +1,6 @@
 
-const User = require('../modals/user');
-const Post = require('../modals/post');
+const User = require('../models/user');
+const Post = require('../models/post');
 const mongoose = require('mongoose');
 
 exports.createPost = (req, res, next) => {
@@ -73,10 +73,13 @@ exports.getFeed = (req, res, next) => {
 
 exports.getPost = (req, res, next) => {
     const postId = req.params.postId;
-    Post.find({_id: postId}).populate({path: 'comments', populate: ({path: 'postedBy'})}).exec()
+    Post
+    .findById(postId)
+    .populate({path: 'comments', populate: ({path: 'postedBy'})})
+    .exec()
     .then(post => {
-        if(post[0]){
-            res.status(200).json({message: 'Post fetched successfully', post: post[0]});
+        if(post){
+            res.status(200).json({message: 'Post fetched successfully', post: post});
         }
     })
     .catch(err => {
@@ -200,7 +203,11 @@ exports.getSavedPosts = (req, res, next) => {
     }
     let savedPosts;
              
-    Post.find().populate('postedBy').exec().then(posts => {
+    Post
+    .find()
+    .populate('postedBy')
+    .exec()
+    .then(posts => {
         if(posts){
             let isLiked;
             savedPosts = posts.reduce((acc, post) => {
@@ -254,7 +261,9 @@ exports.postComment = (req, res, next) => {
 exports.deletePost = (req, res, next) => {
     const postId = req.body.postId;
     const userId = req.body.userId;
-    Post.findByIdAndDelete(postId)
+
+    Post
+    .findByIdAndDelete(postId)
     .then(result => {
         return User.findById(userId);
     })

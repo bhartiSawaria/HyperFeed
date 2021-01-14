@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import { Button } from 'semantic-ui-react';
 
 import classes from './MyPosts.module.css';
-import Post from '../../Feed/Post/Post';
-import Spinner from '../../Spinner/Spinner';
-import Backdrop from '../../Backdrop/Backdrop';
+import Post from '../../Post/Post';
+import Spinner from '../../../components/Spinner/Spinner';
+import Backdrop from '../../../components/Backdrop/Backdrop';
+import fetcher from '../../../fetchWrapper';
 
 class MyPosts extends Component{
 
@@ -37,17 +38,11 @@ class MyPosts extends Component{
     }
 
     fetchPostsFromDatabase = () => {
-        fetch('http://localhost:8080/user/posts',{
-            method: 'GET',
-            headers: {
-                Authorization: 'Bearer ' + this.props.token
-            }
+        fetcher('/user/posts',{
+            method: 'GET'
         })
+        .then(result => result.json())
         .then(result => {
-            return result.json();
-        })
-        .then(result => {
-            console.log('Result ', result);
             const posts = result.posts;
             posts.sort(this.sortByDateAsc);
             this.setState({posts: posts, isLoading: false});
@@ -68,23 +63,16 @@ class MyPosts extends Component{
     deletePostHandler = () => {
         const postId = this.state.clickedPost;
         this.setState({isDeleting: true});
-        fetch('http://localhost:8080/delete-post', {
+        fetcher('/delete-post', {
             method: 'DELETE',
-            headers: {
-                Authorization: 'Bearer ' + this.props.token,
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify({
                 postId: postId,
                 userId: this.props.user.id
             })
         })
-        .then(result => {
-            return result.json();
-        })
+        .then(result => result.json())
         .then(result => {
             this.setState({isDeleting: false});
-            console.log('Result ', result);
             this.fetchPostsFromDatabase();
             this.hideBackdropHandler();
         })
@@ -100,7 +88,6 @@ class MyPosts extends Component{
             return <Post 
                 key={post._id} 
                 post={post} 
-                token={this.props.token} 
                 canDelete={true}
                 clickDelete={() => this.deleteIconClickHandler(post._id)}/>
         });
@@ -144,7 +131,6 @@ class MyPosts extends Component{
 
 const mapStateToProps = state => {
     return {
-        token: state.auth.token,
         user: state.auth.userDetails
     }
 }
