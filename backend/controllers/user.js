@@ -1,28 +1,26 @@
 
 const { validationResult } = require('express-validator/check');
-const mongoose = require('mongoose');
 
 const User = require('../models/user');
 const Post = require('../models/post');
 
-exports.getProfile = (req, res, next) => {
-    User.findById(req.userId)
-    .populate('posts')
-    .populate('friends')
-    .exec()
-    .then(user => {
-        if(user){
-            res.status(200).json({message: 'User info fetched successfully.', user: user});
-        }
-    })
-    .catch(err => {
+exports.getProfile = async (req, res, next) => {
+    try{
+        const user = await User.findById(req.userId)
+        .populate('posts')
+        .populate('friends')
+        .exec();
+
+        res.status(200).json({message: 'User info fetched successfully.', user: user});
+    }
+    catch(err){
         const error = new Error(err);
         error.setStatus = err.status || 500;    
         next(error);
-    });
+    };
 }
 
-exports.postEditAccount = (req, res, next) => {
+exports.postEditAccount = async (req, res, next) => {
     const errors = validationResult(req);
     if( !errors.isEmpty() ){
         const err = new Error('Editing failed!');
@@ -31,28 +29,27 @@ exports.postEditAccount = (req, res, next) => {
         throw err;
     }
 
-    const userId = req.userId;
-    User
-    .findById(userId)
-    .populate('posts')
-    .populate('friends')
-    .exec()
-    .then(user => {
+    try{
+        const userId = req.userId;
+        const user = await User.findById(userId)
+        .populate('posts')
+        .populate('friends')
+        .exec();
+
         user.name = req.body.name;
         user.username = req.body.username;
         user.email = req.body.email;
-        return user.save();
-    })
-    .then(user => {
-        if(user){
-            res.status(200).json({message: 'Account info updated successfully.', user: user});
-        }
-    })
-    .catch(err => {
+        const updatedUser = await user.save();
+        res.status(200).json({
+            message: 'Account info updated successfully.', 
+            user: updatedUser
+        });
+    }
+    catch(err) {
         const error = new Error(err);
         error.setStatus = err.status || 500;    
         next(error);
-    })
+    }
 }
 
 exports.getPosts = async(req, res, next) => {
@@ -79,24 +76,23 @@ exports.getPosts = async(req, res, next) => {
     }
 };
 
-exports.getUsers = (req, res, next) => {
-    User.findById(req.userId)
-    .then(user => {
-        if(user){
-            return User.find({_id: {$nin: [...user.friends, user._id]}});
-        }
-    })
-    .then(users => {
-        res.status(200).json({message: 'Users successfully fetched from database.', users: users});
-    })
-    .catch(err => {
+exports.getUsers = async (req, res, next) => {
+    try{
+        const user = await User.findById(req.userId);
+        const users = await User.find({_id: {$nin: [...user.friends, user._id]}});
+        res.status(200).json({
+            message: 'Users successfully fetched from database.', 
+            users: users
+        });
+    }
+    catch(err){
         const error = new Error(err);
         error.setStatus = 500;    
         next(error); 
-    })
+    }
 }
 
-exports.changeProfilePic = (req, res, next) => {
+exports.changeProfilePic = async(req, res, next) => {
     const userId = req.userId;
     const image = req.file;
     let imageUrl;
@@ -107,66 +103,57 @@ exports.changeProfilePic = (req, res, next) => {
         imageUrl = req.body.imageUrl;
     }
 
-    User.findById(userId)
-    .populate('posts')
-    .populate('friends')
-    .exec()
-    .then(user => {
-        if(user){
-            user.imageUrl = imageUrl;
-            return user.save();
-        }
-    })
-    .then(user => {
-        res.status(200).json({message: 'Profile pic updated successfully', user: user});
-    })
-    .catch(err => {
+    try{
+        const user = await User.findById(userId)
+        .populate('posts')
+        .populate('friends')
+        .exec();
+
+        user.imageUrl = imageUrl;
+        const updatedUser = await user.save();
+        res.status(200).json({
+            message: 'Profile pic updated successfully', 
+            user: updatedUser
+        });
+    }
+    catch(err){
         const error = new Error(err);
         error.setStatus = 500;    
         next(error); 
-    })
+    }
 }
 
-exports.postAddFriend = (req, res, next) => {
-    const addedFriendId = req.body.friendId;
-    User.findById(req.userId)
-    .then(user => {
-        if(user){
-            const updatedFriends = [...user.friends];
-            updatedFriends.push(addedFriendId);
-            user.friends = updatedFriends;
-            return user.save();
-        }
-    })
-    .then(() => User.findOne({_id: addedFriendId}).populate('posts').exec())  
-    .then(user => {
-        if(user)
-            res.status(200).json({message: 'Friend added successfully', friend: user});
-    })
-    .catch(err => {
+exports.postAddFriend = async (req, res, next) => {
+    try{
+        const addedFriendId = req.body.friendId;
+        const user = await User.findById(req.userId);
+        const updatedFriends = [...user.friends];
+        updatedFriends.push(addedFriendId);
+        user.friends = updatedFriends;
+        await user.save();
+
+        const friend = await User.findOne({_id: addedFriendId}).populate('posts').exec();
+        res.status(200).json({message: 'Friend added successfully', friend: friend});
+    }
+    catch(err) {
         const error = new Error(err);
         error.setStatus = 500;    
         next(error); 
-    })
+    }
 }
 
-exports.postRemoveFriend = (req, res, next) => {
-    const removedFriendId = req.body.removedFriendId;
-
-    User.findById(req.userId)
-    .then(user => {
-        if(user){
-            const updatedFriends = user.friends.filter(friend => friend._id != removedFriendId);
-            user.friends = updatedFriends;
-            return user.save();
-        }
-    })
-    .then(user => {
+exports.postRemoveFriend = async (req, res, next) => {
+    try{
+        const removedFriendId = req.body.removedFriendId;
+        const user = await User.findById(req.userId);
+        const updatedFriends = user.friends.filter(friend => friend._id != removedFriendId);
+        user.friends = updatedFriends;
+        await user.save();
         res.status(200).json({message: 'Friend removed successfully'});
-    })
-    .catch(err => {
+    }
+    catch(err) {
         const error = new Error(err);
         error.setStatus = 500;    
         next(error); 
-    })
+    }
 }

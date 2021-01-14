@@ -4,14 +4,14 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user'); 
-const SECRET = 'mySecret';
+const { SECRET } = require('../keyInfo');
 
-exports.postSignup = (req, res, next) => {
+exports.postSignup = async(req, res, next) => {
     const errors = validationResult(req);
     if( !errors.isEmpty() ){
         const err = new Error('Sign up failed!');
         err.data = errors.array(); 
-        console.log('Error occured in postSignup', errors);
+        err.statusCode = 422;
         throw err;
     }
 
@@ -21,54 +21,57 @@ exports.postSignup = (req, res, next) => {
     const password = req.body.password;
     const imageUrl = req.body.imageUrl;
 
-    bcrypt
-        .hash(password, 12)
-        .then(hashPassword => {
-            const user = new User({
-                name: name,
-                username: username,
-                email: email,
-                password: hashPassword,
-                imageUrl: imageUrl
-            });
-            return user.save();
+    try{
+        const hashPassword = await bcrypt.hash(password, 12);
+        const user = new User({
+            name: name,
+            username: username,
+            email: email,
+            password: hashPassword,
+            imageUrl: imageUrl
+        });
+        const createdUser = await user.save();
+        res.status(201).json({
+            message: 'Signed up successfully.',
+            user: createdUser
         })
-        .then(user => {
-            res.status(201).json({
-                message: 'Signed up successfully.',
-                user: user
-            })
-        })
-        .catch(err => {
-            console.log('Error occured!', err);
-        })
+    }
+    catch(error) {
+        console.log('Error occured!', error);
+        error.statusCode = 500;
+        next(error);
+    }
 }
 
-exports.postLogin = (req, res, next) => {
+exports.postLogin = async(req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         const err = new Error('Login failed!');
-        err.statusCode = 401;
+        err.statusCode = 422;
         err.data = errors.array();
         throw err;
     }
     const email = req.body.email;
-    const password = req.body.password;
-    let currentUser;
 
-    User.findOne({email: email})
-    .then(user => {
-        currentUser = user;
+    try{
+        const currentUser = await User.findOne({email: email});
         const token = jwt.sign({
             email: email,
-            userId: user._id
+            userId: currentUser._id
         }, SECRET);
-    
-        res.status(200).json({token: token, userDetails: {id: currentUser._id, username: currentUser.username, imageUrl: currentUser.imageUrl}});
-    })
-    .catch(err => {
+
+        res.status(200).json({
+            token: token, 
+            userDetails: {
+                id: currentUser._id, 
+                username: currentUser.username, 
+                imageUrl: currentUser.imageUrl
+            }
+        });
+    }
+    catch(err) {
         const error = new Error('Cannot find user!');
         error.statusCode = 500;
         next(error);
-    })
+    }
 }

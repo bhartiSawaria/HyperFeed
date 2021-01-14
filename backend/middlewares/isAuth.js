@@ -1,9 +1,9 @@
 
 const jwt = require('jsonwebtoken');
 
-const SECRET = 'mySecret';
+const { SECRET } = require('../keyInfo');
 
-module.exports = (req, res, next) => {
+module.exports = async(req, res, next) => {
     const authorized = req.get('Authorization');
     if(authorized){  
         const token = authorized.split(' ')[1];
@@ -12,19 +12,20 @@ module.exports = (req, res, next) => {
             decodedToken = jwt.verify(token, SECRET);
         }catch(err){
             console.log('Error in decoding token.', err);
-            throw err;
+            err.statusCode = 401;
+            next(err);
         }
         if(!decodedToken){
-            const error = new Error('User is not authorized.');
+            const error = new Error('User is not authenticated.');
             error.setStatus = 401;
-            throw error;
+            next(error);
         }
         req.userId = decodedToken.userId;
         next();
     }
     else{
-        const error = new Error('User is not authorized.');
+        const error = new Error('User is not authenticated.');
         error.setStatus = 401;
-        throw error;
+        next(error);
     }
 }
