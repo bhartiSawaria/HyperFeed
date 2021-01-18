@@ -29,39 +29,44 @@ class Feed extends Component{
     }
 
     loadData(){
-        fetcher('/feed',{ method: 'GET' })
-        .then(result => result.json())
+      /*  fetcher('/feed', 'GET')
         .then(result => {
+
+            if(result.isError)
+                throw new Error();
+
             const posts = result.posts;
             posts.sort(this.sortByDateAsc);
             this.setState({posts: posts});
-            return fetcher('/users', { method: 'GET' });
+            return result = fetcher('/users', 'GET' );
         })
-        .then(result => result.json())
         .then(result => {
+            if(result.isError)
+                throw new Error();
             this.setState({suggestions: result.users, isLoading: false});
         })
         .catch(err => {
-            console.log('Error in feed', err);
+            console.log('Error in Addpost');
+            this.setState({isLoading: false});
+            this.props.history.push('/error');
+        }) */
+
+        Promise.all([
+            fetcher('/feed', 'GET'),
+            fetcher('/users', 'GET')
+        ])
+        .then(([result1, result2]) => {
+            if(result1.isError || result2.isError)
+                throw new Error('Error in getting feed.');
+            const posts = result1.posts;
+            posts.sort(this.sortByDateAsc);
+            this.setState({posts: posts, suggestions: result2.users, isLoading: false});
+        })
+        .catch(err => {
+            console.log(err);
             this.setState({isLoading: false});
             this.props.history.push('/error');
         })
-
-        // Promise.all([
-        //     fetcher('/feed',{ method: 'GET' }),
-        //     fetcher('/users', { method: 'GET' })
-        // ])
-        // .then(([posts, users]) => {
-        //     return [posts.json(), users.json()];
-        // })
-        // .then(([posts, users]) => {
-        //     this.setState({posts: posts, suggestions: users, isLoading: false});
-        // })
-        // .catch(err => {
-        //     console.log('Error in feed', err);
-        //     this.setState({isLoading: false});
-        //     this.props.history.push('/error');
-        // })
     }
 
     componentDidMount = () => {
@@ -70,16 +75,15 @@ class Feed extends Component{
 
     addFriendClickHandler = (addedFriend) => {
         this.setState({ addedFriend: addedFriend, isPostLoading: true});
-        var addedFriendContainer = document.getElementById(addedFriend._id);
+        let addedFriendContainer = document.getElementById(addedFriend._id);
         addedFriendContainer.remove();
-        fetcher('/add-friend', {
-            method: 'POST',
-            body: JSON.stringify({
-                friendId: addedFriend._id
-            })
-        })
-        .then(result => result.json())
+        
+        fetcher('/add-friend', 'POST', JSON.stringify({
+            friendId: addedFriend._id
+        }))
         .then(result => {  
+            if(result.isError)
+                throw new Error();
             const updatedPosts = [...this.state.posts, ...result.friend.posts.map(post => {
                 return {
                     ...post,

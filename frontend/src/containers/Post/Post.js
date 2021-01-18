@@ -33,18 +33,15 @@ class Post extends Component{
             this.setState({likesCount: this.state.likesCount + 1});
             icon.classList.remove('outline');
             icon.style.color = 'red';
-            fetcher('/like-post', {
-                method: 'POST',
-                body: JSON.stringify({
+            fetcher('/like-post', 'POST', JSON.stringify({
                     postId: this.state.id
-                })
-            })
-            .then(result => result.json())
+            }))
             .then(result => {
-                console.log('Result ', result);
+                if(result.isError)
+                    throw new Error('Error in like-post');
             })
             .catch(err => {
-                console.log('Error in like-post', err);
+                console.log(err);
                 this.props.history.push('/error');
             })
         }
@@ -52,18 +49,15 @@ class Post extends Component{
             icon.classList.add('outline');
             icon.style.color = '';
             this.setState({likesCount: this.state.likesCount - 1});
-            fetcher('/unlike-post', {
-                method: 'POST',
-                body: JSON.stringify({
-                    postId: this.state.id
-                })
-            })
-            .then(result => result.json())
+            fetcher('/unlike-post', 'POST', JSON.stringify({
+                postId: this.state.id
+            }))
             .then(result => {
-                console.log('Result 2', result);
+                if(result.isError)
+                    throw new Error('Error in unlike-post');
             })
             .catch(err => {
-                console.log('Error in unlike-post', err);
+                console.log(err);
                 this.props.history.push('/error');
             })
         }
@@ -76,35 +70,29 @@ class Post extends Component{
         let isOutlined = icon.classList.contains('outline');
         if(isOutlined){
             icon.classList.remove('outline');
-            fetcher('/save-post', {
-                method: 'POST',
-                body: JSON.stringify({
-                    postId: this.state.id
-                })
-            })
-            .then(result => result.json())
+            fetcher('/save-post', 'POST', JSON.stringify({
+                postId: this.state.id
+            }))
             .then(result => {
-                console.log('Result 2', result);
+                if(result.isError)
+                    throw new Error('Error in saving a post');
             })
             .catch(err => {
-                console.log('Error in saving a post', err);
+                console.log(err);
                 this.props.history.push('/error');
             })
         }
         else{
             icon.classList.add('outline');
-            fetcher('/remove-saved-post', {
-                method: 'POST',
-                body: JSON.stringify({
-                    postId: this.state.id
-                })
-            })
-            .then(result => result.json())
+            fetcher('/remove-saved-post', 'POST', JSON.stringify({
+                postId: this.state.id
+            }))
             .then(result => {
-                console.log('Result 2', result);
+                if(result.isError)
+                    throw new Error('Error in removing a saved post');
             })
             .catch(err => {
-                console.log('Error in removing a saved post', err);
+                console.log(err);
                 this.props.history.push('/error');
             })
         }
@@ -117,25 +105,22 @@ class Post extends Component{
     postCommentHandler = (event) => {
         event.preventDefault();
         if(this.state.comment !== ''){
-            // this.setState({commentsCount: this.state.commentsCount + 1});
-            fetcher("/add-comment", {
-                method: 'Post',
-                body: JSON.stringify({
-                    postId: this.state.id,
-                    commentInfo: {
-                        message: this.state.comment,
-                        postedBy: this.props.user.id
-                    }
-                })
-            })
-            .then(result => result.json())
+            fetcher('/add-comment', 'POST', JSON.stringify({
+                postId: this.state.id,
+                commentInfo: {
+                    message: this.state.comment,
+                    postedBy: this.props.user.id
+                }
+            }))
             .then(result => {
+                if(result.isError)
+                    throw new Error('Error in Add Comment');
                 this.setState({comment: '', commentsCount: this.state.commentsCount + 1}, () => {
                     this.showCommentsHandler();
                 });
             })
             .catch(err => {
-                console.log('Error in Add Comment', err);
+                console.log(err);
                 this.props.history.push('/error');
             })
         }
@@ -144,15 +129,14 @@ class Post extends Component{
     showCommentsHandler = () => {
         this.setState({showBackdrop: true, showModal: true});
         const url = '/post/' + this.state.id;
-        fetcher(url, {
-            method: 'Get'
-        })
-        .then(result => result.json())
+        fetcher(url, 'GET')
         .then(result => {
+            if(result.isError)
+                throw new Error('Error in getting a single post');
             this.setState({allComments: result.post.comments});
         })
         .catch(err => {
-            console.log('Error in getting a single post', err);
+            console.log(err);
             this.props.history.push('/error');
         })
     }

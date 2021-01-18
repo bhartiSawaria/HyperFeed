@@ -58,24 +58,19 @@ class AddPost extends Component{
             formData.append('content', this.state.content);
             formData.append('image', this.state.image);
             formData.append('userId', this.props.user.id);
-            fetcher('/add-post', {
-                method: 'Post',
-                body: formData
-            }, true)
+
+            fetcher('/add-post', 'POST', formData, true)
             .then(result => {
-                console.log('1. Result is ', result);
-                return result.json();
-            })
-            .then(result => {
-                console.log('2. Result is ', result);
+                if(result.isError)
+                    throw new Error();
                 this.setState({isLoading: false});
-                this.props.history.push('/feed');
+                this.props.history.push('/feed');   
             })
-            .catch(err => {
-                console.log('Error in PostType1', err);
+            .catch(error => {
+                console.log('Error in Addpost');
                 this.setState({isLoading: false});
                 this.props.history.push('/error');
-            })
+            });    
         }
     }
 

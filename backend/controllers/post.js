@@ -82,7 +82,7 @@ exports.savePost = async(req, res, next) => {
     const postId = req.body.postId;
     if(!postId){
         const error = new Error('Post id is incorrect.');
-        throw error;
+        return next(error);
     }
 
     try{
@@ -125,7 +125,7 @@ exports.likePost = async(req, res, next) => {
     const postId = req.body.postId;
     if(!postId){
         const error = new Error('Post id is incorrect.');
-        throw error;
+        return next(error);
     }
 
     try{
@@ -171,7 +171,7 @@ exports.getSavedPosts = async(req, res, next) => {
     const userId = req.userId;
     if(!userId){
         const error = new Error('User id invalid.');
-        throw error;
+        return next(error);
     }
         
     try{
@@ -207,8 +207,8 @@ exports.postComment = async(req, res, next) => {
         const postId = req.body.postId;
         const commentMessage = req.body.commentInfo.message;
         const post = await Post.findById(postId);
-        var updatedComments = [...post.comments];
-        var newComment = {
+        let updatedComments = [...post.comments];
+        let newComment = {
             message: commentMessage,
             postedBy: req.body.commentInfo.postedBy
         }
@@ -244,4 +244,3 @@ exports.deletePost = async(req, res, next) => {
         next(error);  
     }
 }
-

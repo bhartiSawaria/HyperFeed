@@ -49,14 +49,7 @@ class Login extends Component{
         event.preventDefault();
         if( this.isFormValid() ){
             this.setState({isLoading: true});
-            fetcher('/login', {
-                body: JSON.stringify(this.state.userInfo),
-                method: 'POST'
-            })
-            .then(result => {
-                this.setState({isLoading: false});
-                return result.json();
-            })
+            fetcher('/login', 'POST', JSON.stringify(this.state.userInfo))
             .then(result => {
                 if( result.data ){
                     this.setState({error: result.data[0].msg});

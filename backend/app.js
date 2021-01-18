@@ -49,7 +49,7 @@ app.use(postRoutes);
 app.use(userRoutes);
 
 app.use((error, req, res, next) => {
-    console.log('Error occured', error);
+    // console.log('Error occured', error);
     const status = error.statusCode || 500;
     const message = error.message;
     const data = error.data;

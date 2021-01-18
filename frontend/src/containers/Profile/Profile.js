@@ -32,11 +32,10 @@ class Profile extends Component{
     }
 
     componentDidMount(){
-        fetcher('/my-profile', {
-            method: 'GET'
-        })
-        .then(result => result.json())
+        fetcher('/my-profile', 'GET')
         .then(result => {
+            if(result.isError)
+                throw new Error('Error in Profile.js');
             this.setState({
                 user: result.user, 
                 isLoading: false, 
@@ -48,7 +47,7 @@ class Profile extends Component{
             });
         })
         .catch(err => {
-            console.log('Error in Profile', err);
+            console.log(err);
             this.setState({isLoading: false});
             this.props.history.push('/error');
         })
@@ -76,18 +75,13 @@ class Profile extends Component{
 
     proceedFinalEditHandler = () => {
         this.setState({isEditing: true});
-        fetcher('/edit-account', {
-            method: 'POST',
-            body: JSON.stringify({
-                name: this.state.editedUserInfo.name,
-                username: this.state.editedUserInfo.username,
-                email: this.state.editedUserInfo.email,
-                id: this.props.user.id
-            })
-        })
-        .then(result => result.json())
+        fetcher('/edit-account', 'POST', JSON.stringify({
+            name: this.state.editedUserInfo.name,
+            username: this.state.editedUserInfo.username,
+            email: this.state.editedUserInfo.email,
+            id: this.props.user.id
+        }))
         .then(result => {
-            console.log('Result is ', result);
             let error = '';
             if(result.data){
                 error = result.data[0].msg;
@@ -140,17 +134,15 @@ class Profile extends Component{
             formData.append('image', this.state.image);
             formData.append('imageUrl', profilePic);
             
-            fetcher('/change-profile-pic', {
-                method: 'POST',
-                body: formData
-            }, true)
-            .then(result => result.json())
+            fetcher('/change-profile-pic', 'POST', formData, true)
             .then(result => {
+                if(result.isError)
+                    throw new Error('Error in changing profile pic');
                 this.setState({user: result.user, isEditing: false});
                 this.hideModalAndBackdrop();
             })
             .catch(err => {
-                console.log('Error in changing profile pic', err);
+                console.log(err);
                 this.setState({isEditing: false});
                 this.props.history.push('/error');
             })
@@ -165,19 +157,17 @@ class Profile extends Component{
     }
 
     onClickRemove = (removedFriendId) => {
-        fetcher('/remove-friend', {
-            method: 'POST',
-            body: JSON.stringify({
-                removedFriendId: removedFriendId
-            })
-        })
-        .then(result => result.json())
+        fetcher('/remove-friend','POST', JSON.stringify({
+            removedFriendId: removedFriendId
+        }))
         .then(result => {
+            if(result.isError)
+                throw new Error('Error removing friend.');
             const removedFriendContainer = document.getElementById(removedFriendId);
             removedFriendContainer.remove();
         })
         .catch(err => {
-            console.log('Error removing friend.', err);
+            console.log(err);
             this.props.history.push('/error');
         })
     }

@@ -1,26 +1,61 @@
 
-const updateOptions = (options, isFormData) => {
-    const updatedOptions = {...options};
-   // console.log('updatedOptions', updatedOptions, updatedOptions.headers['Content-Type']);
+const BASE_URL = 'http://localhost:8080';
+
+const fetcher = async(path, method, body = null, isFormData = false) => {
     const token = localStorage.getItem('token');
-    updatedOptions.headers = {
-        ...updatedOptions.headers
+    let payload;
+
+    if(token && body && !isFormData){
+        payload = {
+            method: method,
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: body
+        }
     }
-    if(token){
-        updatedOptions.headers.Authorization = 'Bearer ' + token;
+    else if(token && body){
+        payload = {
+            method: method,
+            headers: {
+                Authorization: 'Bearer ' + token
+            },
+            body: body
+        }
     }
-    if(!isFormData){
-        updatedOptions.headers['Content-Type'] = 'application/json';
+    else if(body){
+        payload = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: body
+        }
     }
-    else{
-        // updatedOptions.body = {...options.body};
-        console.log(updatedOptions.body, options.body);
+    else if(token){
+        payload = {
+            method: method,
+            headers: {
+                Authorization: 'Bearer ' + token
+            }
+        }
     }
-    
-    return updatedOptions;
+    let result;
+
+    try{
+       result = await fetch( BASE_URL + path, payload );
+
+       if(!(result.status === 200 || result.status === 201)){
+           throw new Error('Error occurred!!');
+       }
+       const finalResult = await result.json();
+       return finalResult;
+    }
+    catch(error){
+        result.isError = true;
+        return result;
+    } 
 }
 
-export default function fetcher(path, options, isFormData = false) {
-    const baseUrl = 'http://localhost:8080';
-    return fetch(baseUrl + path, updateOptions(options, isFormData));
-}
+export default fetcher;

@@ -26,7 +26,7 @@ exports.postEditAccount = async (req, res, next) => {
         const err = new Error('Editing failed!');
         err.data = errors.array(); 
         console.log('Error occured in postEditAccount', errors);
-        throw err;
+        return next(err);
     }
 
     try{

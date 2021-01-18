@@ -21,17 +21,16 @@ class SavedPosts extends Component{
     }
 
     componentDidMount(){
-        fetcher('/saved-posts',{
-            method: 'GET'
-        })
-        .then(result => result.json())
+        fetcher('/saved-posts', 'GET')
         .then(result => {
+            if(result.isError)
+                throw new Error('Error in saved-posts');
             const posts = result.posts;
             posts.sort(this.sortByDateAsc);
             this.setState({posts: posts, isLoading: false});
         })
         .catch(err => {
-            console.log('Error in saved-posts', err);
+            console.log(err);
             this.setState({isLoading: false});
             this.props.history.push('/error');
         })

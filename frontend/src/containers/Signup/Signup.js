@@ -91,11 +91,7 @@ class Signup extends Component{
         event.preventDefault();
         if( this.isFormValid() ){
             this.setState({isLoading: true});
-            fetcher('/signup',{
-                method: 'POST',
-                body: JSON.stringify(this.state.userInfo)
-            })
-            .then(result => result.json())
+            fetcher('/signup', 'POST', JSON.stringify(this.state.userInfo))
             .then(result => {
                 if( result.data ){
                     this.setState({error: result.data[0].msg});

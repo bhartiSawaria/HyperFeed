@@ -38,17 +38,16 @@ class MyPosts extends Component{
     }
 
     fetchPostsFromDatabase = () => {
-        fetcher('/user/posts',{
-            method: 'GET'
-        })
-        .then(result => result.json())
+        fetcher('/user/posts', 'GET')
         .then(result => {
+            if(result.isError)
+                throw new Error('Error in MyPosts');
             const posts = result.posts;
             posts.sort(this.sortByDateAsc);
             this.setState({posts: posts, isLoading: false});
         })
         .catch(err => {
-            console.log('Error in MyPosts', err);
+            console.log(err);
             this.setState({isLoading: false});
             this.props.history.push('/error');
         })
@@ -63,22 +62,20 @@ class MyPosts extends Component{
     deletePostHandler = () => {
         const postId = this.state.clickedPost;
         this.setState({isDeleting: true});
-        fetcher('/delete-post', {
-            method: 'DELETE',
-            body: JSON.stringify({
-                postId: postId,
-                userId: this.props.user.id
-            })
-        })
-        .then(result => result.json())
+        fetcher('/delete-post', 'DELETE', JSON.stringify({
+            postId: postId,
+            userId: this.props.user.id
+        }))
         .then(result => {
+            if(result.isError)
+                throw new Error('Error in deleting post.');
             this.setState({isDeleting: false});
             this.fetchPostsFromDatabase();
             this.hideBackdropHandler();
         })
         .catch(err => {
             this.setState({isDeleting: false});
-            console.log('Error in deleting post', err);
+            console.log(err);
             this.props.history.push('/error');
         })
     }

@@ -12,7 +12,9 @@ exports.postSignup = async(req, res, next) => {
         const err = new Error('Sign up failed!');
         err.data = errors.array(); 
         err.statusCode = 422;
-        throw err;
+        // console.log('error is', err);
+        console.log('error occured');
+        return next(err);
     }
 
     const name = req.body.name;
@@ -49,7 +51,7 @@ exports.postLogin = async(req, res, next) => {
         const err = new Error('Login failed!');
         err.statusCode = 422;
         err.data = errors.array();
-        throw err;
+        return next(err);
     }
     const email = req.body.email;
 
